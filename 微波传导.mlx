@@ -1,0 +1,66 @@
+%%%%%%import data
+X1=readmatrix("C:\DataForXY\_physics\LAB\contemporary physics experiment\Microwave waveguide transmission and detection\report\Data.xlsx",'Range','A4:D4');%实验一 测量线
+f=9.38*10^(9);
+a=22.86;%mm
+c=3*10^(8+3);%mm/s
+X21=readmatrix("C:\DataForXY\_physics\LAB\contemporary physics experiment\Microwave waveguide transmission and detection\report\Data.xlsx",'Range','A7:N7');%实验二 测量线
+X22=readmatrix("C:\DataForXY\_physics\LAB\contemporary physics experiment\Microwave waveguide transmission and detection\report\Data.xlsx",'Range','A9:N9');%实验二 I
+IMAX=720;
+X31=140;%混波电流Max
+X32=100;%混波电流Min
+X33=readmatrix("C:\DataForXY\_physics\LAB\contemporary physics experiment\Microwave waveguide transmission and detection\report\Data.xlsx",'Range','A19:D19');%实验三 测量线
+%%%%%%task1
+lamada=c/f
+lambdag0=lamada/(sqrt(1-(lamada/(2*a))^(2)))
+lambdag1=X1(3)+X1(4)-(X1(1)+X1(2))
+Vg=f*lambdag0%mm/s
+u=c^2/Vg%mm/s
+%%%%%%task2
+Beta=2*pi/lambdag0;
+X21New=[(X21(1)+X21(2))/2,X21(3:12),(X21(13)+X21(14))/2];%min 到max 对应的l
+X21New=X21New-min(X21New)
+RescaleE=sin(X21New*Beta)%归一
+X22New=[0,X22(3:12),720]%720 max I
+RescaleI=rescale(X22New)%归一
+figure
+    axis auto;
+    plot(RescaleE,RescaleI,'bo-');
+    xlabel ('$$\frac{E}{E_{MAX}}$$','interpreter','latex');
+    ylabel ('$$\frac{I}{I_{MAX}}$$','interpreter','latex');
+    grid on;
+    text(0.7,40030,'11180708忻宇');
+    title ("检波二极管特性曲线");
+lgRescaleI=log(X22New(2:end))%与书上的k' 不同，相差Em的n次幂，但也是常数    
+lgRescaleE=log(RescaleE(2:end))% 0点inf
+[p,S]=polyfit(lgRescaleE,lgRescaleI,1)%p最后一个元素截距
+x1 = linspace(-1.5,0,50);
+y1 = polyval(p,x1);
+figure
+    axis auto;
+    plot(lgRescaleE,lgRescaleI,'bo');
+    hold on;
+    plot(x1,y1,'r-');
+    xlabel ('$$\ln{sin(\beta l)}$$','interpreter','latex');
+    ylabel ('$$\ln{I}$$','interpreter','latex');
+    grid on;
+    text(0.7,40030,'11180708忻宇');
+    title ("");
+kbar=exp(p(2))
+n=p(1)% what>?/
+
+a =  0.9887;
+b =   2.212;
+x=linspace(0,1,50)
+y=a*x.^(b)
+figure
+    axis auto;
+    plot(RescaleE,RescaleI,'bo-');
+    hold on
+    plot(x,y,'r-')
+    xlabel ('$$\frac{E}{E_{MAX}}$$','interpreter','latex');
+    ylabel ('$$\frac{I}{I_{MAX}}$$','interpreter','latex');
+    grid on;
+    text(0.7,40030,'11180708忻宇');
+    legend('实验数据','拟合曲线','Location','best')
+    title ('$$\frac{I}{I_{max}}=a(\frac{E}{E_{max}})^{b}$$','interpreter','latex');
+
